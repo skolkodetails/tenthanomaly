@@ -1,0 +1,46 @@
+<!-- так как я не очень умная и не знаю как делать что либо во фронтенде, -->
+<!-- то здесь будет очень много комментариев -->
+ <!-- объявляю тип документа -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>прпрпрпр а вера мне не отвечает</title>
+    <link rel="stylesheet" href="style.css"> 
+     <!-- щас тут будут подключены библиотеки potly.js(графики и диаграммы) 
+     и axios (для подключения питона), если что потом поменять -->
+     <!-- пока их под комметарием
+     <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>-->
+</head>
+<body>
+    <!-- тут будет всё, что видно пользоватлю -->
+     <header>
+        <!-- шапка -->
+        <h1>заголовок</h1>
+        <p>абзац</p>
+
+    </header>
+    <main>
+    <!-- основное содержимое -->
+        <h2>Данные пациента</h2>
+        <form id="patient-form">
+            <div>
+                <label>Возраст:</label>
+                <input type="number" name="age" placeholder="Введите возраст">
+            </div>
+    
+            <div>
+                <label>Размер опухоли (мм):</label>
+                <input type="number" name="tumour_size" placeholder="Размер в мм">
+            </div>
+    
+            <button type="submit">Запустить моделирование</button>
+        </form>
+    </main>
+
+    <script src="script.js"></script>
+    <!-- подключает файл с джава скрипт кодом -->
+</body>    
+</html>
