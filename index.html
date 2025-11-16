@@ -10,9 +10,9 @@
     <link rel="stylesheet" href="style.css"> 
      <!-- щас тут будут подключены библиотеки potly.js(графики и диаграммы) 
      и axios (для подключения питона), если что потом поменять -->
-     <!-- пока их под комметарием
+     
      <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
-     <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>-->
+     <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
 </head>
 <body>
     <!-- тут будет всё, что видно пользоватлю -->
@@ -22,26 +22,43 @@
         <p>абзац</p>
 
     </header>
-    <main>
-    <!-- основное содержимое -->
-        <h2>Данные пациента</h2>
-        <form id="patient-form">
-            <div>
-                <label>Возраст:</label>
-                <input type="number" name="age" placeholder="Введите возраст">
+
+    <nav class="app-navigation">
+        <button class="nav-btn active" onclick="app.showSection('form')">Одиночный пациент</button>
+        <button class="nav-btn" onclick="app.showSection('batch')">Пакетная обработка</button>
+        <button class="nav-btn" onclick="app.showSection('results')">Результаты</button>
+    </nav>
+
+    <!-- Основное содержимое -->
+    <main class="app-main">
+        <!-- Секция формы ввода данных -->
+        <section id="form-section" class="section active">
+            <div id="patient-form-container">
+                <!-- Сюда будет вставлена форма через JavaScript -->
             </div>
-    
-            <div>
-                <label>Размер опухоли (мм):</label>
-                <input type="number" name="tumour_size" placeholder="Размер в мм">
+        </section>
+
+        <!-- Секция пакетной обработки -->
+        <section id="batch-section" class="section">
+            <div id="csv-uploader-container">
+                <!-- Сюда будет вставлен CSV загрузчик -->
             </div>
-    
-            <button type="submit">Запустить моделирование</button>
-        </form>
+        </section>
+
+        <!-- Секция результатов -->
+        <section id="results-section" class="section">
+            <div id="results-container">
+                <!-- Сюда будут вставлены результаты -->
+            </div>
+        </section>
     </main>
+
+     <!-- Подвал -->
+    <footer class="app-footer">
+        <p>Разработано для хакатона по биоинженерии и медицинской информатике</p>
+    </footer>
 
     <script src="script.js"></script>
     <!-- подключает файл с джава скрипт кодом -->
 </body>    
-
 </html>
