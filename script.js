@@ -89,7 +89,7 @@ class ChemotherapyOptimizer {
                 <div class="form-row">
                     <div class="form-group">
                         <label>Возраст *</label>
-                        <input type="number" name="age" min="18" max="120" required>
+                        <input type="number" name="age" min="0" max="120" required>
                     </div>
                     
                     <div class="form-group">
@@ -109,43 +109,24 @@ class ChemotherapyOptimizer {
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>ER статус</label>
-                        <select name="ER_status">
-                            <option value="">Не указан</option>
-                            <option value="positive">Положительный</option>
-                            <option value="negative">Отрицательный</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>PR статус</label>
-                        <select name="PR_status">
-                            <option value="">Не указан</option>
-                            <option value="positive">Положительный</option>
-                            <option value="negative">Отрицательный</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>HER2 статус</label>
-                        <select name="HER2_status">
-                            <option value="">Не указан</option>
-                            <option value="positive">Положительный</option>
-                            <option value="negative">Отрицательный</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
                         <label>Вес (кг)</label>
-                        <input type="number" name="weight" step="0.1" min="30" placeholder="Введите вес">
+                        <input type="number" name="weight" step="0.1" min="30" max= "1000" placeholder="Введите вес">
                     </div>
 
                     <div class="form-group">
                         <label>Рост (см)</label>
-                        <input type="number" name="height" min="100" placeholder="Введите рост">
+                        <input type="number" name="height" min="20" max="300" placeholder="Введите рост">
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Тип рака молочной железы</label>
+                    <select name=tumor_type>
+                        <option value="++">+HR +HER2</option>
+                        <option value="+-">+HR -HER2</option>
+                        <option value="-+">-HR +HER2</option>
+                        <option value="--">TNBS (-HR -HER2)</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
@@ -157,6 +138,8 @@ class ChemotherapyOptimizer {
                         <option value="combo">Комбинированная терапия</option>
                     </select>
                 </div>
+
+
 
                 <button type="submit" class="submit-btn">Запустить моделирование</button>
             </form>
@@ -205,8 +188,8 @@ class ChemotherapyOptimizer {
     validatePatientData(data) {
         const errors = [];
         
-        if (!data.age || data.age < 18 || data.age > 120) {
-            errors.push('Возраст должен быть от 18 до 120 лет');
+        if (!data.age || data.age < 0 || data.age > 120) {
+            errors.push('Возраст должен быть от 0 до 120 лет');
         }
         
         if (!data.tumour_size_mm || data.tumour_size_mm <= 0 || data.tumour_size_mm > 200) {
@@ -224,15 +207,15 @@ class ChemotherapyOptimizer {
             /@\w+\.\w+/ // Email
         ];
 
-        Object.values(data).forEach(value => {
-            if (typeof value === 'string') {
-                piiPatterns.forEach(pattern => {
-                    if (pattern.test(value)) {
-                        errors.push('Обнаружены персональные данные. Пожалуйста, удалите их для анонимности.');
-                    }
-                });
-            }
-        });
+       // Object.values(data).forEach(value => {
+         //   if (typeof value === 'string') {
+           //     piiPatterns.forEach(pattern => {
+             //       if (pattern.test(value)) {
+               //         errors.push('Обнаружены персональные данные. Пожалуйста, удалите их для анонимности.');
+                 //   }
+                //});
+            //}
+        //});
         
         return errors;
     }
@@ -393,33 +376,8 @@ class ChemotherapyOptimizer {
         });
     }
 
-    // Загрузка CSV загрузчика
-    loadCSVUploader() {
-        const container = document.getElementById('csv-uploader-container');
-        if (!container) return;
-
-        container.innerHTML = `
-            <div class="patient-form">
-                <h2>Пакетная обработка данных</h2>
-                
-                <div class="form-group">
-                    <label>Загрузка CSV файла с данными пациентов</label>
-                    <input type="file" id="csv-file" accept=".csv" onchange="app.handleCSVUpload(event)">
-                    <p style="margin-top: 10px; font-size: 0.9em; color: #666;">
-                        Поддерживается загрузка CSV файлов с данными пациентов. Максимальный размер: 5MB
-                    </p>
-                </div>
-                
-                <div style="margin: 2rem 0;">
-                    <h3>Шаблон CSV файла</h3>
-                    <p>Скачайте шаблон для правильного форматирования данных:</p>
-                    <button onclick="app.downloadTemplate()" class="submit-btn">
-                        📥 Скачать шаблон CSV
-                    </button>
-                </div>
-            </div>
-        `;
-    }
+    
+    
 
     // Обработка загрузки CSV
     handleCSVUpload(event) {
