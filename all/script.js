@@ -1,0 +1,1054 @@
+// Главный класс приложения
+class ChemotherapyOptimizer {
+    constructor() {
+        this.currentSection = 'form';
+        this.simulationData = null;
+        this.currentTheme = 'light';
+        this.selectedTherapy = 'none';
+        this.init();
+    }
+defineSubtype() {
+    const er = document.querySelector('input[name="ER_status"]')?.checked || false;
+    const pr = document.querySelector('input[name="PR_status"]')?.checked || false;
+    const her2 = document.querySelector('input[name="HER2_status"]')?.checked || false;
+    const ki67Input = document.querySelector('input[name="ki67"]');
+    const ki67 = ki67Input?.value ? parseFloat(ki67Input.value) : 0;
+
+    const subtypeDisplay = document.getElementById('subtype-display');
+    
+    // Проверка что все поля заполнены
+    if (!ki67) {
+        alert('Пожалуйста, заполните поле Ki67');
+        return;
+    }
+
+    const subtype = this.defineBreastCancerSubtype(er, pr, her2, ki67);
+    const treatment = this.defineBreastCancerTreatment(subtype.code);
+
+    subtypeDisplay.innerHTML = `
+        <h4>Определённый подтип:</h4>
+        <div class="subtype-badge">${subtype.name}</div>
+        <div class="subtype-code">${subtype.code}</div>
+        <div class="subtype-therapy">
+            <strong>Рекомендуемая терапия:</strong><br>
+            ${treatment.main_therapy}
+        </div>
+        <div class="subtype-recommendations">
+            <strong>Рекомендации:</strong>
+            <ul>
+                ${treatment.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+            </ul>
+        </div>
+    `;
+    
+    subtypeDisplay.style.display = 'block';
+}
+    init() {
+        console.log('Приложение инициализировано');
+        this.loadTheme();
+        this.loadPatientForm();
+        this.setupEventListeners();
+    }
+
+    defineBreastCancerSubtype(er, pr, her2, ki67) {
+        ki67 = parseFloat(ki67);
+
+        if (!er && !pr && !her2) {
+            return { name: 'Базальноподобный', code: 'TNBC' };
+        }
+
+        if (her2 && !er && !pr) {
+            return { name: 'HER2 положительный (не люминальный)', code: 'HR-HER2+' };
+        }
+
+        if (er) {
+            if (her2) {
+                return { name: 'Люминальный В (HER2 положительный)', code: 'HR+HER2+B' };
+            } else if (ki67 >= 20 || !pr) {
+                return { name: 'Люминальный В (HER2 отрицательный)', code: 'HR+HER2-B' };
+            } else {
+                return { name: 'Люминальный А', code: 'HR+HER2-A' };
+            }
+        }
+
+        return { name: 'Неопределенный', code: 'Unknown' };
+    }
+
+    defineBreastCancerTreatment(molecularSubtype) {
+        const treatments = {
+            "TNBC": {
+                "subtype": "TNBC",
+                "main_therapy": "Химиотерапия с антрациклинами и таксанами",
+                "recommendations": [
+                    "При T1a (≤ 5 мм) и N0: системная терапия не показана",
+                    "при T1b и N0 возможно проведение 4 циклов ХТ DC (доцетаксел + циклофосфамид)",
+                    "при T1c — T3 или N (+) — ХТ антрациклинами и таксанами: 4 цикла АС/ЕС → 12 еженедельных введений паклитаксела ± карбоплатин"
+                ],
+                "therapy_type": "chemotherapy"
+            },
+            "HR-HER2+": {
+                "subtype": "HR-HER2+",
+                "main_therapy": "Таргетная терапия + химиотерапия",
+                "recommendations": [
+                    "При T1a (≤ 5 мм) и N0 системная терапия не показана",
+                    "при T1b, c (> 5 мм, но ≤ 20 мм) и N0: трастузумаб 12 мес. + ХТ без антрациклинов",
+                    "при T2 — T3 (> 20 мм) или N (+): трастузумаб ± пертузумаб 12 мес. + ХТ"
+                ],
+                "therapy_type": "target_therapy"
+            },
+            "HR+HER2+B": {
+                "subtype": "HR+HER2+B",
+                "main_therapy": "Таргетная терапия + химиотерапия",
+                "recommendations": [
+                    "При T1a (≤ 5 мм) и N0: только адъювантная ГТ",
+                    "при T1b, c (> 5 мм, но ≤ 20 мм) и N0: трастузумаб + ХТ без антрациклинов",
+                    "при T2 — T3 (> 20 мм) или N (+): трастузумаб ± пертузумаб + ХТ",
+                    "после завершения ХТ - адъювантная ГТ с анти-HER2 терапией"
+                ],
+                "therapy_type": "target_therapy"
+            },
+            "HR+HER2-B": {
+                "subtype": "HR+HER2-B",
+                "main_therapy": "Химиотерапия в большинстве случаев",
+                "recommendations": [
+                    "При T1a-b (≤10 мм) и N0: только адъювантная ГТ",
+                    "при T1c — T2 и N0-1: рассмотреть ХТ при С3, низком РЭ, высоком KI67",
+                    "при T3 или N2: ХТ в большинстве случаев",
+                    "в пременопаузе: возможен отказ от ХТ в пользу овариальной супрессии"
+                ],
+                "therapy_type": "chemotherapy"
+            },
+            "HR+HER2-A": {
+                "subtype": "HR+HER2-A",
+                "main_therapy": "Гормональная терапия в большинстве случаев",
+                "recommendations": [
+                    "ХТ рассматривать при поражении ≥ 4 лимфоузлов",
+                    "режимы ХТ: DC (4 цикла) или AC/EC (4 цикла)"
+                ],
+                "therapy_type": "hormone_therapy"
+            }
+        };
+
+        return treatments[molecularSubtype] || {
+            "subtype": molecularSubtype,
+            "main_therapy": "информация о типе отсутствует",
+            "recommendations": [],
+            "therapy_type": "unknown"
+        };
+    }
+
+    loadPatientForm() {
+        const container = document.getElementById('patient-form-container');
+        if (!container) return;
+
+        container.innerHTML = `
+            <form class="patient-form" onsubmit="app.handleFormSubmit(event)">
+                <h2>Данные пациента с РМЖ</h2>
+                
+                <div class="personal-data-section">
+                    <h3>Персональные данные</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>ФИО пациента</label>
+                            <input type="text" name="patient_name" placeholder="Введите фамилию, имя, отчество" 
+                                   oninput="app.checkPII(this)">
+                            <div class="input-hint">ФИО используется только для идентификации в системе и не передается третьим лицам
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Возраст</label>
+                            <input type="number" name="age" min="0" max="120" required>
+<                       /div>
+                        
+                        <div class="form-group">
+                            <label>Пол </label>
+                            <select name="sex" required>
+                                <option value="">Выберите пол</option>
+                                <option value="female">Женский</option>
+                                <option value="male">Мужской</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Вес (кг)</label>
+                        <input type="number" name="weight" step="0.1" min="1" max="700" placeholder="Введите вес">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Рост (см)</label>
+                        <input type="number" name="height" min="20" max="300" required placeholder="Введите рост">
+                    </div>
+                </div>
+
+                <!-- Клинические данные -->
+                <div class="personal-data-section">
+                    <h3>Клинические данные</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Стадия рака </label>
+                            <select name="cancer_stage" required>
+                                <option value="">Выберите стадию</option>
+                                <option value="1">Первая стадия</option>
+                                <option value="2">Вторая стадия</option> 
+                                <option value="3">Третья стадия</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Период менопаузы</label>
+                            <div class="radio-group-horizontal">
+                                <label class="radio-label">
+                                    <input type="radio" name="menopause_status" value="premenopausal">
+                                    <span class="radio-custom"></span>
+                                    Пременопауза
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="menopause_status" value="perimenopausal">
+                                    <span class="radio-custom"></span>
+                                    Перименопауза
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="menopause_status" value="postmenopausal">
+                                    <span class="radio-custom"></span>
+                                    Постменопауза
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="menopause_status" value="none" checked>
+                                    <span class="radio-custom"></span>
+                                    Нет
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                
+                </div>
+
+                <!-- Биомаркеры опухоли -->
+                <div class="biomarkers-section">
+                    <h3>Биомаркеры опухоли *</h3>
+                    
+                    <div class="biomarkers-section">
+    <h3>Биомаркеры опухоли *</h3>
+    
+    <div class="biomarkers-grid">
+        <div class="biomarker-group">
+            <h4>Рецепторный статус *</h4>
+            <div class="checkbox-group-vertical">
+                <label class="checkbox-label">
+                    <input type="checkbox" name="ER_status" value="positive">
+                    <span class="checkbox-custom"></span>
+                    ER (Эстрогеновый рецептор) +
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" name="PR_status" value="positive">
+                    <span class="checkbox-custom"></span>
+                    PR (Прогестероновый рецептор) +
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" name="HER2_status" value="positive">
+                    <span class="checkbox-custom"></span>
+                    HER2 (Рецептор 2-го типа) +
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Ki67 (%) *</label>
+            <input type="number" name="ki67" min="0" max="100" step="0.1" required 
+                   placeholder="Введите значение от 0 до 100">
+            <div class="input-hint">Индекс пролиферативной активности</div>
+        </div>
+    </div>
+
+    <button type="button" class="submit-btn" onclick="app.defineSubtype()" style="margin-top: 1rem;">
+        Определить подтип рака
+    </button>
+
+    <div class="subtype-display" id="subtype-display" style="display: none; margin-top: 1.5rem;">
+        <!-- Здесь появится результат -->
+    </div>
+</div>
+
+    <div class="tumor-characteristics-section">
+        <h3>Характеристики опухоли</h3>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Исходный размер опухоли (см) *</label>
+                <input type="number" name="tumour_size_cm" step="0.01" min="0.01" max="20" required>
+            </div>
+            
+            <div class="form-group">
+                <label>TNBS статус</label>
+                <div class="radio-group-horizontal">
+                    <label class="radio-label">
+                        <input type="radio" name="TNBS_status" value="positive">
+                        <span class="radio-custom"></span>
+                        TNBS +
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="TNBS_status" value="negative" checked>
+                        <span class="radio-custom"></span>
+                        TNBS -
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                        <div class="subtype-display" id="subtype-display">
+                            <h4>Определённый подтип:</h4>
+                            <div class="subtype-placeholder">
+                                Введите данные биомаркеров для определения подтипа
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ki67 (%) *</label>
+                            <input type="number" name="ki67" min="0" max="100" step="0.1" required 
+                                   placeholder="Введите значение от 0 до 100" oninput="app.updateSubtype()">
+                            <div class="input-hint">Индекс пролиферативной активности</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Исходный размер опухоли (см) *</label>
+                            <input type="number" name="tumour_size_cm" step="0.01" min="0.01" max="20" required>
+                        </div>
+                    </div>
+
+                    <!-- Скрывающаяся справка по параметрам -->
+                    <details class="biomarker-info-collapsible">
+                        <summary>Справка по параметрам</summary>
+                        <div class="biomarker-info-content">
+                            <h4>Справка по параметрам:</h4>
+                            <ul>
+                                <li><strong>Ki67</strong> - маркер пролиферативной активности. Высокие значения (>20%) указывают на быстрый рост опухоли</li>
+                                <li><strong>ER/PR+</strong> - чувствительность к гормональной терапии</li>
+                                <li><strong>HER2+</strong> - показание для таргетной терапии</li>
+                                <li><strong>TNBS+</strong> - тройной негативный статус</li>
+                                <li><strong>СКФ</strong> - скорость клубочковой фильтрации, важный показатель функции почек</li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- Уведомление о ФЗ-152 -->
+                <div class="data-protection-notice">
+                    <h4>🔒 Защита персональных данных</h4>
+                    <p>В соответствии с Федеральным законом №152-ФЗ «О персональных данных» все введенные данные защищены и используются исключительно в медицинских целях. ФИО пациента автоматически анонимизируются.</p>
+                </div>
+
+                <button type="submit" class="submit-btn">Спрогнозировать лечение</button>
+            </form>
+        `;
+    }
+
+    updateSubtype() {
+        const er = document.querySelector('input[name="ER_status"]')?.checked || false;
+        const pr = document.querySelector('input[name="PR_status"]')?.checked || false;
+        const her2 = document.querySelector('input[name="HER2_status"]')?.checked || false;
+        const tnbs = document.querySelector('input[name="TNBS_status"]')?.checked || false;
+        const ki67Input = document.querySelector('input[name="ki67"]');
+        const ki67 = ki67Input?.value ? parseFloat(ki67Input.value) : 0;
+
+        const subtypeDisplay = document.getElementById('subtype-display');
+        
+        if (!er && !pr && !her2 && !tnbs && !ki67) {
+            subtypeDisplay.innerHTML = `
+                <h4>Определённый подтип:</h4>
+                <div class="subtype-placeholder">
+                    Введите данные биомаркеров для определения подтипа
+                </div>
+            `;
+            return;
+        }
+
+        const subtype = this.defineBreastCancerSubtype(er, pr, her2, ki67);
+        const treatment = this.defineBreastCancerTreatment(subtype.code);
+
+        subtypeDisplay.innerHTML = `
+            <h4>Определённый подтип:</h4>
+            <div class="subtype-badge">${subtype.name}</div>
+            <div class="subtype-code">${subtype.code}</div>
+            <div class="subtype-therapy">
+                <strong>Рекомендуемая терапия:</strong><br>
+                ${treatment.main_therapy}
+            </div>
+            <div class="subtype-recommendations">
+                <strong>Рекомендации:</strong>
+                <ul>
+                    ${treatment.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                </ul>
+            </div>
+        `;
+    }
+
+    setupEventListeners() {
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                this.toggleTheme();
+            });
+        }
+        console.log('Обработчики событий настроены');
+    }
+
+    toggleTheme() {
+        this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+        document.body.setAttribute('data-theme', this.currentTheme);
+        
+        const themeBtn = document.getElementById('theme-toggle');
+        themeBtn.textContent = this.currentTheme === 'light' ? '🌙 Тёмная тема' : '☀️ Светлая тема';
+        
+        localStorage.setItem('theme', this.currentTheme);
+    }
+
+    loadTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            this.currentTheme = savedTheme;
+            document.body.setAttribute('data-theme', this.currentTheme);
+            
+            const themeBtn = document.getElementById('theme-toggle');
+            themeBtn.textContent = this.currentTheme === 'light' ? '🌙 Тёмная тема' : '☀️ Светлая тема';
+        }
+    }
+
+    showSection(sectionName) {
+        console.log('Переключаемся на секцию:', sectionName);
+        
+        document.querySelectorAll('.section').forEach(section => {
+            section.classList.remove('active');
+        });
+        
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        const targetSection = document.getElementById(`${sectionName}-section`);
+        if (targetSection) {
+            targetSection.classList.add('active');
+        }
+        
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            if (btn.textContent.toLowerCase().includes(this.getSectionKey(sectionName))) {
+                btn.classList.add('active');
+            }
+        });
+
+        this.currentSection = sectionName;
+        
+        this.loadSectionContent(sectionName);
+    }
+
+    getSectionKey(sectionName) {
+        const keys = {
+            'form': 'одиночный',
+            'batch': 'пакетная', 
+            'results': 'результаты'
+        };
+        return keys[sectionName] || '';
+    }
+
+    loadSectionContent(sectionName) {
+        switch(sectionName) {
+            case 'form':
+                this.loadPatientForm();
+                break;
+            case 'batch':
+                this.loadCSVUploader();
+                break;
+            case 'results':
+                this.loadResults();
+                break;
+        }
+    }
+
+    checkPII(inputElement) {
+        const value = inputElement.value;
+        const warningElement = document.getElementById('pii-warning');
+        
+        const piiPatterns = [
+            /[А-Я][а-я]+\s[А-Я][а-я]+\s[А-Я][а-я]+/i,
+            /\d{4}\s?\d{4}\s?\d{4}\s?\d{4}/,
+            /\+\d{1,3}\s?\(?\d{3}\)?\s?\d{3}[\s-]?\d{2}[\s-]?\d{2}/,
+            /@\w+\.\w+/i,
+            /\d{6}/
+        ];
+        
+        const hasPII = piiPatterns.some(pattern => pattern.test(value));
+        
+        if (hasPII && value.length > 0) {
+            warningElement.style.display = 'block';
+            inputElement.style.borderColor = '#e74c3c';
+        } else {
+            warningElement.style.display = 'none';
+            inputElement.style.borderColor = '';
+        }
+    }
+
+    hashPatientName(name) {
+        if (!name || name.trim() === '') {
+            return 'Анонимный пациент';
+        }
+        
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            const char = name.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+        
+        return `Пациент_${Math.abs(hash).toString(36).substring(0, 8).toUpperCase()}`;
+    }
+
+    async handleFormSubmit(event) {
+        event.preventDefault();
+        console.log('Форма отправлена');
+        
+        const formData = new FormData(event.target);
+        const patientData = {};
+        
+        for (let [key, value] of formData.entries()) {
+            if (['ER_status', 'PR_status', 'HER2_status', 'TNBS_status'].includes(key)) {
+                patientData[key] = true;
+            } else {
+                patientData[key] = value;
+            }
+        }
+        
+        const checkboxes = ['ER_status', 'PR_status', 'HER2_status', 'TNBS_status'];
+        checkboxes.forEach(checkbox => {
+            if (!patientData[checkbox]) {
+                patientData[checkbox] = false;
+            }
+        });
+        
+        if (patientData.patient_name && patientData.patient_name.trim() !== '') {
+            patientData.hashed_name = this.hashPatientName(patientData.patient_name);
+        } else {
+            patientData.hashed_name = 'Анонимный пациент';
+        }
+        
+        const errors = this.validatePatientData(patientData);
+        if (errors.length > 0) {
+            alert('Пожалуйста, исправьте ошибки:\n' + errors.join('\n'));
+            return;
+        }
+
+        const subtype = this.defineBreastCancerSubtype(
+            patientData.ER_status,
+            patientData.PR_status,
+            patientData.HER2_status,
+            patientData.ki67
+        );
+        
+        const treatment = this.defineBreastCancerTreatment(subtype.code);
+        
+        patientData.molecular_subtype = subtype;
+        patientData.recommended_treatment = treatment;
+
+        const submitBtn = event.target.querySelector('.submit-btn');
+        submitBtn.textContent = 'Моделирование...';
+        submitBtn.disabled = true;
+
+        try {
+            await this.saveToDatabase(patientData);
+            
+            this.simulationData = await this.simulateTreatment(patientData);
+            this.showSection('results');
+        } catch (error) {
+            alert('Ошибка при моделировании: ' + error.message);
+            console.error('Ошибка:', error);
+        } finally {
+            submitBtn.textContent = 'Спрогнозировать лечение';
+            submitBtn.disabled = false;
+        }
+    }
+
+async saveToDatabase(patientData) {
+    try {
+        const backendData = {
+            age: parseInt(patientData.age),
+            sex: patientData.sex,
+            weight: parseFloat(patientData.weight),
+            height: patientData.height ? parseFloat(patientData.height) : null,
+            cancer_stage: patientData.cancer_stage,
+            menopause_status: patientData.menopause_status || null,
+            distant_metastasis_count: patientData.distant_metastasis_count ? parseInt(patientData.distant_metastasis_count) : 0,
+            tumour_size_cm: parseFloat(patientData.tumour_size_cm),
+            ki67: parseFloat(patientData.ki67),
+            ER_status: patientData.ER_status,
+            PR_status: patientData.PR_status,
+            HER2_status: patientData.HER2_status,
+            molecular_subtype: patientData.molecular_subtype,
+            recommended_treatment: patientData.recommended_treatment
+        };
+
+        const response = await fetch('http://localhost:5000/api/patients', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(backendData)
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+            console.log('Данные успешно сохранены в БД:', result);
+            return result;
+        } else {
+            throw new Error(result.message);
+        }
+
+    } catch (error) {
+        console.error('Ошибка при сохранении в БД:', error);
+        return { success: false, message: error.message };
+    }
+}
+
+    validatePatientData(data) {
+        const errors = [];
+        
+        if (!data.age || data.age < 0 || data.age > 120) {
+            errors.push('Возраст должен быть от 0 до 120 лет');
+        }
+        
+        if (!data.tumour_size_cm || data.tumour_size_cm <= 0 || data.tumour_size_cm > 20) {
+            errors.push('Размер опухоли должен быть от 0,01 до 20 см');
+        }
+        
+        if (!data.sex) {
+            errors.push('Пожалуйста, укажите пол пациента');
+        }
+
+        if (!data.ki67 || data.ki67 < 0 || data.ki67 > 100) {
+            errors.push('Ki67 должен быть в диапазоне от 0 до 100%');
+        }
+        
+        if (!data.cancer_stage) {
+            errors.push('Пожалуйста, укажите стадию рака');
+        }
+        
+        if (!data.height) {
+            errors.push('Пожалуйста, укажите рост пациента');
+        }
+        
+        return errors;
+    }
+
+    async simulateTreatment(patientData) {
+        console.log('Начинаем моделирование для:', patientData);
+        
+        const delay = 1000 + Math.random() * 2000;
+        
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve({
+                    patientData: patientData
+                });
+            }, delay);
+        });
+    }
+
+    generateFiveYearData(patientData) {
+        const initialSize = parseFloat(patientData.tumour_size_cm);
+        const months = Array.from({length: 61}, (_, i) => i);
+        
+        const noTreatment = months.map(month => {
+            return initialSize * Math.exp(0.02 * month);
+        });
+        
+        const chemotherapy = months.map(month => {
+            if (month < 12) {
+                return initialSize * Math.exp(-0.05 * month);
+            } else {
+                return Math.max(0.5, initialSize * 0.3 * Math.exp(-0.01 * (month - 12)));
+            }
+        });
+        
+        const targetTherapy = months.map(month => {
+            return Math.max(0.3, initialSize * Math.exp(-0.03 * month));
+        });
+        
+        return {
+            months,
+            noTreatment: noTreatment.map(size => Math.round(size * 10) / 10),
+            chemotherapy: chemotherapy.map(size => Math.round(size * 10) / 10),
+            targetTherapy: targetTherapy.map(size => Math.round(size * 10) / 10)
+        };
+    }
+
+    calculateProbabilities(patientData, therapyType) {
+        const age = parseInt(patientData.age);
+        const tumorSize = parseFloat(patientData.tumour_size_cm);
+        const ki67 = parseFloat(patientData.ki67);
+        const metastasisCount = patientData.distant_metastasis_count ? parseInt(patientData.distant_metastasis_count) : 0;
+        const gfr = patientData.gfr ? parseFloat(patientData.gfr) : 90;
+        
+        let baseSurvival = 85;
+        let baseMetastasis = 25;
+        let baseSuccess = 70;
+        
+        if (age > 60) baseSurvival -= 10;
+        if (age > 70) baseSurvival -= 5;
+        
+        if (tumorSize > 5) {
+            baseSurvival -= 15;
+            baseMetastasis += 20;
+            baseSuccess -= 10;
+        }
+        
+        if (ki67 > 30) {
+            baseSurvival -= 15;
+            baseMetastasis += 15;
+            baseSuccess -= 10;
+        } else if (ki67 > 20) {
+            baseSurvival -= 8;
+            baseMetastasis += 8;
+            baseSuccess -= 5;
+        }
+        
+        if (metastasisCount > 0) {
+            baseSurvival -= metastasisCount * 5;
+            baseMetastasis += metastasisCount * 10;
+            baseSuccess -= metastasisCount * 3;
+        }
+        
+        if (gfr < 60) {
+            baseSurvival -= 5;
+            baseSuccess -= 3;
+        }
+        
+        if (patientData.ER_status && therapyType === 'chemotherapy') {
+            baseSurvival += 5;
+            baseSuccess += 8;
+        }
+        
+        if (patientData.HER2_status && therapyType === 'targetTherapy') {
+            baseSurvival += 10;
+            baseSuccess += 12;
+        }
+        
+        const therapyModifiers = {
+            'none': { survival: 0.6, metastasis: 1.8, success: 0.3 },
+            'chemotherapy': { survival: 1.2, metastasis: 0.7, success: 1.3 },
+            'targetTherapy': { survival: 1.3, metastasis: 0.6, success: 1.4 }
+        };
+        
+        const modifier = therapyModifiers[therapyType] || therapyModifiers.none;
+        
+        return {
+            survival: Math.max(0, Math.min(100, Math.round(baseSurvival * modifier.survival))),
+            metastasis: Math.max(0, Math.min(100, Math.round(baseMetastasis * modifier.metastasis))),
+            success: Math.max(0, Math.min(100, Math.round(baseSuccess * modifier.success)))
+        };
+    }
+
+    handleTherapyChange(therapyType) {
+        this.selectedTherapy = therapyType;
+        this.updateChart();
+        this.updateProbabilities();
+    }
+
+    updateChart() {
+        if (!this.simulationData) return;
+        
+        const { patientData } = this.simulationData;
+        const fiveYearData = this.generateFiveYearData(patientData);
+        this.renderFiveYearChart(fiveYearData, this.selectedTherapy);
+    }
+
+    updateProbabilities() {
+        if (!this.simulationData) return;
+        
+        const { patientData } = this.simulationData;
+        const probabilities = this.calculateProbabilities(patientData, this.selectedTherapy);
+        
+        document.getElementById('survival-prob').textContent = probabilities.survival + '%';
+        document.getElementById('metastasis-prob').textContent = probabilities.metastasis + '%';
+        document.getElementById('success-prob').textContent = probabilities.success + '%';
+    }
+
+    renderFiveYearChart(data, selectedTherapy) {
+        const colors = {
+            'none': '#e74c3c',
+            'chemotherapy': '#3498db',
+            'targetTherapy': '#2ecc71'
+        };
+        
+        const traces = [
+            {
+                x: data.months,
+                y: data.noTreatment,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Без лечения',
+                line: { 
+                    color: colors.none,
+                    width: selectedTherapy === 'none' ? 5 : 2,
+                    dash: 'solid'
+                },
+                opacity: selectedTherapy === 'none' ? 1 : 0.7
+            },
+            {
+                x: data.months,
+                y: data.chemotherapy,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Химиотерапия',
+                line: { 
+                    color: colors.chemotherapy,
+                    width: selectedTherapy === 'chemotherapy' ? 5 : 2,
+                    dash: 'solid'
+                },
+                opacity: selectedTherapy === 'chemotherapy' ? 1 : 0.7
+            },
+            {
+                x: data.months,
+                y: data.targetTherapy,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Таргетная терапия',
+                line: { 
+                    color: colors.targetTherapy,
+                    width: selectedTherapy === 'targetTherapy' ? 5 : 2,
+                    dash: 'solid'
+                },
+                opacity: selectedTherapy === 'targetTherapy' ? 1 : 0.7
+            }
+        ];
+
+        const layout = {
+            title: 'Прогноз изменения размера опухоли в течение 5 лет',
+            xaxis: { 
+                title: 'Время (месяцы)',
+                gridcolor: '#ecf0f1',
+                range: [0, 60]
+            },
+            yaxis: { 
+                title: 'Размер опухоли (см)',
+                gridcolor: '#ecf0f1'
+            },
+            plot_bgcolor: '#f8f9fa',
+            paper_bgcolor: '#ffffff',
+            legend: { 
+                orientation: 'h',
+                y: -0.3
+            },
+            hovermode: 'closest',
+            showlegend: true
+        };
+
+        const config = {
+            displayModeBar: true,
+            displaylogo: false,
+            responsive: true,
+            modeBarButtonsToAdd: [{
+                name: 'fullscreen',
+                title: 'Полноэкранный режим',
+                icon: {
+                    'width': 857.1,
+                    'height': 1000,
+                    'path': 'M214.3 1000V857.1H357.1V785.7H142.9v214.2h71.4zm-71.4-642.8h71.4V142.9h214.3V71.4H142.9v285.7zm571.4-285.7v285.7h71.4V142.9h214.3V71.4H714.3zm214.3 642.8v214.3H714.3v71.4h285.7V785.7h-71.4z',
+                    'transform': 'matrix(1 0 0 -1 0 1000)'
+                },
+                click: function(gd) {
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen();
+                    } else {
+                        gd.parentElement.requestFullscreen();
+                    }
+                }
+            }]
+        };
+
+        Plotly.newPlot('chart-container', traces, layout, config);
+
+        document.getElementById('chart-container').on('plotly_legendclick', (data) => {
+            const therapyMap = {
+                'Без лечения': 'none',
+                'Химиотерапия': 'chemotherapy',
+                'Таргетная терапия': 'targetTherapy'
+            };
+            
+            const therapyType = therapyMap[data.node.textContent];
+            if (therapyType) {
+                this.handleTherapyChange(therapyType);
+                document.querySelector(`input[name="therapy"][value="${therapyType}"]`).checked = true;
+            }
+            return false;
+        });
+    }
+
+    loadResults() {
+        const container = document.getElementById('results-container');
+        if (!container) return;
+        
+        if (!this.simulationData) {
+            container.innerHTML = `
+                <div class="no-data">
+                    <h3>Нет данных для отображения</h3>
+                    <p>Запустите моделирование для просмотра результатов</p>
+                    <button onclick="app.showSection('form')" class="submit-btn">Вернуться к форме ввода</button>
+                </div>
+            `;
+            return;
+        }
+
+        const { patientData } = this.simulationData;
+        const fiveYearData = this.generateFiveYearData(patientData);
+        const initialProbabilities = this.calculateProbabilities(patientData, this.selectedTherapy);
+        
+        container.innerHTML = `
+            <div class="results-container">
+                <div class="results-header">
+                    <h2>Результаты прогнозирования лечения</h2>
+                    <button onclick="app.showSection('form')" class="nav-btn">Новый расчет</button>
+                </div>
+                
+                <div class="patient-summary">
+                    <h3>Данные пациента:</h3>
+                    <p><strong>Идентификатор:</strong> ${patientData.hashed_name}</p>
+                    <p>Возраст: ${patientData.age} лет, Пол: ${patientData.sex === 'female' ? 'женский' : 'мужской'}, 
+                    Вес: ${patientData.weight} кг, Рост: ${patientData.height} см, Размер опухоли: ${patientData.tumour_size_cm} см, Ki67: ${patientData.ki67}%</p>
+                    <p>Стадия рака: ${patientData.cancer_stage}, Метастазы: ${patientData.distant_metastasis_count || 0}, СКФ: ${patientData.gfr || 'не указано'} мл/мин</p>
+                    <p>Биомаркеры: 
+                        ${patientData.ER_status ? 'ER+ ' : 'ER- '}
+                        ${patientData.PR_status ? 'PR+ ' : 'PR- '}
+                        ${patientData.HER2_status ? 'HER2+ ' : 'HER2- '}
+                        ${patientData.TNBS_status ? 'TNBS+ ' : 'TNBS- '}
+                        ${patientData.menopause_status ? `Менопауза: ${patientData.menopause_status}` : ''}
+                    </p>
+                </div>
+
+                <div class="molecular-analysis">
+                    <h3>Молекулярный анализ</h3>
+                    <div class="analysis-results">
+                        <div class="subtype-card">
+                            <h4>Определённый подтип:</h4>
+                            <div class="subtype-badge">${patientData.molecular_subtype.name}</div>
+                            <div class="subtype-code">${patientData.molecular_subtype.code}</div>
+                        </div>
+                        
+                        <div class="treatment-card">
+                            <h4>Рекомендованная терапия:</h4>
+                            <div class="main-therapy">${patientData.recommended_treatment.main_therapy}</div>
+                            
+                            <div class="recommendations-list">
+                                <h5>Рекомендации:</h5>
+                                <ul>
+                                    ${patientData.recommended_treatment.recommendations.map(rec => 
+                                        `<li>${rec}</li>`
+                                    ).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="therapy-selection">
+                    <h3>Выберите вариант терапии для прогноза:</h3>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="therapy" value="none" checked>
+                            <span class="radio-custom"></span>
+                            Без лечения
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="therapy" value="chemotherapy">
+                            <span class="radio-custom"></span>
+                            Химиотерапия
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="therapy" value="targetTherapy">
+                            <span class="radio-custom"></span>
+                            Таргетная терапия
+                        </label>
+                    </div>
+                </div>
+                
+                <div id="chart-container" style="width: 100%; height: 500px; margin: 2rem 0;"></div>
+                
+                <div class="probabilities-container">
+                    <h3>Прогноз для выбранной терапии (5 лет):</h3>
+                    <div class="probabilities-grid">
+                        <div class="probability-card">
+                            <div class="prob-icon">📊</div>
+                            <div class="prob-content">
+                                <h4>Вероятность выживания</h4>
+                                <div class="prob-value" id="survival-prob">${initialProbabilities.survival}%</div>
+                                <p>Шанс пациента прожить более 5 лет</p>
+                            </div>
+                        </div>
+                        <div class="probability-card">
+                            <div class="prob-icon">⚠️</div>
+                            <div class="prob-content">
+                                <h4>Вероятность метастазов</h4>
+                                <div class="prob-value" id="metastasis-prob">${initialProbabilities.metastasis}%</div>
+                                <p>Риск развития отдаленных метастазов</p>
+                            </div>
+                        </div>
+                        <div class="probability-card">
+                            <div class="prob-icon">✅</div>
+                            <div class="prob-content">
+                                <h4>Вероятность успеха</h4>
+                                <div class="prob-value" id="success-prob">${initialProbabilities.success}%</div>
+                                <p>Шанс достижения ремиссии</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recommendations">
+                    <h3>Рекомендации</h3>
+                    <div class="recommendation-card">
+                        <p>${this.generateRecommendation(patientData, this.selectedTherapy)}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        this.renderFiveYearChart(fiveYearData, this.selectedTherapy);
+        this.setupTherapyListeners();
+    }
+
+    setupTherapyListeners() {
+        const radioButtons = document.querySelectorAll('input[name="therapy"]');
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', (event) => {
+                if (event.target.checked) {
+                    this.handleTherapyChange(event.target.value);
+                }
+            });
+        });
+    }
+
+    generateRecommendation(patientData, therapyType) {
+        const probabilities = this.calculateProbabilities(patientData, therapyType);
+        
+        if (therapyType === 'none') {
+            return "Рекомендуется рассмотреть варианты активного лечения для улучшения прогноза.";
+        } else if (probabilities.success > 80) {
+            return "Отличный прогноз! Рекомендуется выбранная схема лечения с регулярным мониторингом.";
+        } else if (probabilities.success > 60) {
+            return "Хороший прогноз. Рекомендуется выбранная терапия с возможностью коррекции дозировки.";
+        } else {
+            return "Рассмотрите альтернативные схемы лечения или комбинированные подходы для улучшения результатов.";
+        }
+    }
+}
+
+const app = new ChemotherapyOptimizer();
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Страница загружена, приложение готово к работе');
+});

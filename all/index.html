@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оптимизация терапии РМЖ | Медицинская аналитика</title>
+    
+    <!-- Подключаем шрифты -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-content">
+            <h1>Персонализированная оптимизация терапии рака молочной железы</h1>
+            <p>Инновационная платформа для прогнозирования эффективности лечения на основе математического моделирования</p>
+            <button id="theme-toggle" class="theme-btn">🌙 Тёмная тема</button>
+        </div>
+    </header>
+
+    <nav class="app-navigation">
+        <button class="nav-btn active" onclick="app.showSection('form')">Одиночный пациент</button>
+        <button class="nav-btn" onclick="app.showSection('results')">Результаты</button>
+    </nav>
+
+    <main class="app-main">
+        <section id="form-section" class="section active">
+            <div id="patient-form-container">
+                <!-- Форма будет загружена через JavaScript -->
+            </div>
+        </section>
+
+        <section id="results-section" class="section">
+            <div id="results-container">
+                <!-- Результаты будут загружены через JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <p>Разработано для хакатона Сеченовского университета "MedITron" командой "Десятая аномалия"</p>
+        <p>Используем передовые технологии биоинформатики для улучшения качества жизни пациентов</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>    
+</html>

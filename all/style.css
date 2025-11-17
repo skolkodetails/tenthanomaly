@@ -1,0 +1,1060 @@
+/* а здесь дизайн */
+/* Общие стили */
+/* а здесь дизайн */
+/* Шрифты и темы */
+/* Шрифты и темы */
+:root {
+    /* Шрифты */
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-heading: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    
+    /* Светлая тема */
+    --bg-primary: #f5f6fa;
+    --bg-secondary: #ffffff;
+    --bg-header: linear-gradient(135deg, #2c3e50 0%, #e67e22 100%);
+    --bg-footer: #2c3e50;
+    --text-primary: #2c3e50;
+    --text-secondary: #7f8c8d;
+    --accent-primary: #e67e22;
+    --accent-secondary: #d35400;
+    --border-color: #bdc3c7;
+    --shadow: rgba(0,0,0,0.1);
+    --card-bg: #ffffff;
+}
+
+[data-theme="dark"] {
+    /* Тёмная тема */
+    --bg-primary: #1a1a2e;
+    --bg-secondary: #16213e;
+    --bg-header: linear-gradient(135deg, #16213e 0%, #e67e22 100%);
+    --bg-footer: #0f3460;
+    --text-primary: #ffffff;
+    --text-secondary: #ecf0f1;
+    --accent-primary: #e67e22;
+    --accent-secondary: #f39c12;
+    --border-color: #34495e;
+    --shadow: rgba(0,0,0,0.3);
+    --card-bg: #16213e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-primary);
+    margin: 0;
+    padding: 20px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-weight: 400;
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Шапка */
+.app-header {
+    background: var(--bg-header);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 2px 10px var(--shadow);
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.header-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.app-header h1 {
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+    font-family: var(--font-heading);
+    font-weight: 700;
+}
+
+.app-header p {
+    opacity: 0.9;
+    font-size: 1.1rem;
+    font-weight: 400;
+}
+
+.theme-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    font-family: var(--font-primary);
+}
+
+.theme-btn:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+/* Навигация */
+.app-navigation {
+    background: var(--bg-secondary);
+    display: flex;
+    justify-content: center;
+    box-shadow: 0 2px 5px var(--shadow);
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.nav-btn {
+    padding: 1rem 2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+    font-family: var(--font-primary);
+    font-weight: 500;
+}
+
+.nav-btn:hover {
+    color: var(--accent-primary);
+    background: var(--bg-primary);
+}
+
+.nav-btn.active {
+    color: var(--accent-primary);
+    border-bottom-color: var(--accent-primary);
+    background: var(--bg-primary);
+}
+
+/* Основное содержимое */
+.app-main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 60vh;
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Подвал */
+.app-footer {
+    background: var(--bg-footer);
+    color: white;
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    border-radius: 10px;
+    font-family: var(--font-primary);
+}
+
+/* Стили формы */
+.patient-form {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 2px 20px var(--shadow);
+}
+
+.patient-form h2 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    text-align: center;
+    border-bottom: 2px solid var(--accent-primary);
+    padding-bottom: 0.5rem;
+    font-family: var(--font-heading);
+    font-weight: 600;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+}
+
+.form-group input,
+.form-group select {
+    padding: 0.75rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 5px rgba(230, 126, 34, 0.3);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--accent-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background 0.3s, transform 0.2s;
+    font-family: var(--font-primary);
+    font-weight: 600;
+}
+
+.submit-btn:hover {
+    background: var(--accent-secondary);
+    transform: translateY(-2px);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+.submit-btn:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Стили для результатов */
+.results-container {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 2px 20px var(--shadow);
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.results-header h2 {
+    color: var(--text-primary);
+    font-family: var(--font-heading);
+}
+
+.recommendations {
+    margin-top: 2rem;
+}
+
+.recommendations h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-family: var(--font-heading);
+}
+
+.recommendation-card {
+    background: var(--bg-primary);
+    padding: 1.5rem;
+    border-radius: 10px;
+    border-left: 4px solid var(--accent-primary);
+    font-family: var(--font-primary);
+}
+
+.no-data {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-secondary);
+    font-family: var(--font-primary);
+}
+/* Стили для выбора терапии */
+.therapy-selection {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px var(--shadow);
+    margin: 2rem 0;
+}
+
+.therapy-selection h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-family: var(--font-heading);
+}
+
+.radio-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    transition: all 0.3s;
+    background: var(--bg-secondary);
+}
+
+.radio-label:hover {
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.radio-label input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.radio-custom {
+    position: relative;
+    height: 20px;
+    width: 20px;
+    background-color: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    margin-right: 12px;
+    transition: all 0.3s;
+}
+
+.radio-label input[type="radio"]:checked ~ .radio-custom {
+    background-color: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
+.radio-label input[type="radio"]:checked ~ .radio-custom::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+}
+
+.radio-label input[type="radio"]:checked ~ span:last-child {
+    font-weight: 600;
+    color: var(--accent-primary);
+}
+
+.radio-label input[type="radio"]:focus ~ .radio-custom {
+    box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.3);
+}
+
+/* Стили для блока вероятностей */
+.probabilities-container {
+    margin: 2rem 0;
+}
+
+.probabilities-container h3 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-family: var(--font-heading);
+}
+
+.probabilities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.probability-card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px var(--shadow);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: transform 0.3s;
+}
+
+.probability-card:hover {
+    transform: translateY(-5px);
+}
+
+.prob-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.prob-content h4 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-family: var(--font-heading);
+}
+
+.prob-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    margin: 0.5rem 0;
+}
+
+.prob-content p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .radio-group {
+        grid-template-columns: 1fr;
+    }
+    
+    .probabilities-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .probability-card {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* Стили для чекбоксов (если еще не добавлены) */
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: background-color 0.3s;
+    position: relative;
+}
+
+.checkbox-label:hover {
+    background: var(--bg-primary);
+}
+
+.checkbox-label input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.checkbox-custom {
+    position: relative;
+    height: 20px;
+    width: 20px;
+    background-color: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    margin-right: 10px;
+    transition: all 0.3s;
+}
+
+.checkbox-label input[type="checkbox"]:checked ~ .checkbox-custom {
+    background-color: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
+.checkbox-label input[type="checkbox"]:checked ~ .checkbox-custom::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-label input[type="checkbox"]:focus ~ .checkbox-custom {
+    box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.3);
+}
+/* Стили для секции персональных данных */
+.personal-data-section {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px var(--shadow);
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #3498db;
+}
+
+.personal-data-section h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-family: var(--font-heading);
+}
+
+.pii-warning {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pii-warning::before {
+    content: "⚠️";
+    font-size: 1.2rem;
+}
+
+/* Стили для уведомления о защите данных */
+.data-protection-notice {
+    background: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 1.5rem 0;
+}
+
+.data-protection-notice h4 {
+    margin-bottom: 0.5rem;
+    font-family: var(--font-heading);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.data-protection-notice p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Адаптивность для новых элементов */
+@media (max-width: 768px) {
+    .personal-data-section {
+        padding: 1rem;
+    }
+    
+    .data-protection-notice {
+        padding: 0.8rem;
+    }
+}
+/* Стили для молекулярного анализа */
+.molecular-analysis {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px var(--shadow);
+    margin: 1.5rem 0;
+}
+
+.molecular-analysis h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-family: var(--font-heading);
+    border-bottom: 2px solid var(--accent-primary);
+    padding-bottom: 0.5rem;
+}
+
+.analysis-results {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1.5rem;
+}
+
+.subtype-card {
+    background: var(--bg-primary);
+    padding: 1.5rem;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.subtype-badge {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    margin: 0.5rem 0;
+    font-family: var(--font-heading);
+}
+
+.subtype-code {
+    background: var(--accent-primary);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.treatment-card {
+    background: var(--bg-primary);
+    padding: 1.5rem;
+    border-radius: 10px;
+}
+
+.main-therapy {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    padding: 0.8rem;
+    background: var(--card-bg);
+    border-radius: 8px;
+    border-left: 4px solid var(--accent-primary);
+}
+
+.recommendations-list h5 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-family: var(--font-heading);
+}
+
+.recommendations-list ul {
+    color: var(--text-secondary);
+    padding-left: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.recommendations-list li {
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.therapy-type {
+    background: var(--card-bg);
+    padding: 0.8rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Адаптивность для молекулярного анализа */
+@media (max-width: 768px) {
+    .analysis-results {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .subtype-card,
+    .treatment-card {
+        padding: 1rem;
+    }
+}
+/* Стили для биомаркеров и определения подтипа */
+.biomarkers-section {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px var(--shadow);
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #e67e22;
+}
+
+.biomarkers-section h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-family: var(--font-heading);
+}
+
+.biomarkers-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.biomarker-group h4 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-family: var(--font-heading);
+}
+
+.checkbox-group-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.subtype-display {
+    background: var(--bg-primary);
+    padding: 1.5rem;
+    border-radius: 10px;
+    border: 2px dashed var(--border-color);
+}
+
+.subtype-placeholder {
+    color: var(--text-secondary);
+    font-style: italic;
+    text-align: center;
+    padding: 2rem;
+}
+
+.subtype-badge {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    margin: 0.5rem 0;
+    font-family: var(--font-heading);
+}
+
+.subtype-code {
+    background: var(--accent-primary);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.subtype-therapy {
+    background: var(--card-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    border-left: 3px solid var(--accent-primary);
+}
+
+.subtype-recommendations {
+    background: var(--card-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.subtype-recommendations ul {
+    margin-top: 0.5rem;
+    padding-left: 1.2rem;
+}
+
+.subtype-recommendations li {
+    margin-bottom: 0.3rem;
+    line-height: 1.3;
+}
+
+/* Стили для скрывающейся справки */
+.biomarker-info-collapsible {
+    margin-top: 1.5rem;
+}
+
+.biomarker-info-collapsible summary {
+    cursor: pointer;
+    padding: 1rem;
+    background: var(--bg-primary);
+    border-radius: 8px;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: background-color 0.3s;
+}
+
+.biomarker-info-collapsible summary:hover {
+    background: var(--border-color);
+}
+
+.biomarker-info-content {
+    padding: 1.5rem;
+    background: var(--bg-primary);
+    border-radius: 0 0 8px 8px;
+    margin-top: 0.5rem;
+}
+
+.biomarker-info-content h4 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-family: var(--font-heading);
+}
+
+.biomarker-info-content ul {
+    color: var(--text-secondary);
+    padding-left: 1.2rem;
+}
+
+.biomarker-info-content li {
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+/* Стили для менопаузы */
+.menopause-section {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px var(--shadow);
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #9b59b6;
+}
+
+.menopause-section h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-family: var(--font-heading);
+}
+
+.radio-group-horizontal {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.radio-group-horizontal .radio-label {
+    flex: 1;
+    min-width: 150px;
+    text-align: center;
+    justify-content: center;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .biomarkers-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .radio-group-horizontal {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .radio-group-horizontal .radio-label {
+        min-width: auto;
+    }
+}
+
+/* Стили для предупреждений */
+.warning-message {
+    background: #ffeaa7;
+    border: 1px solid #fdcb6e;
+    color: #856404;
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.input-hint {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 0.3rem;
+    font-style: italic;
+}
+/* Стили для обязательных полей */
+.form-group.required label::after {
+    content: " *";
+    color: #e74c3c;
+}
+
+.form-group.required input {
+    border-left: 3px solid #e74c3c;
+}
+
+/* Плашка ФЗ-152 */
+.data-protection-notice {
+    background: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 1.5rem 0;
+    border-left: 4px solid #3498db;
+}
+
+.data-protection-notice h4 {
+    margin-bottom: 0.5rem;
+    font-family: var(--font-heading);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.data-protection-notice p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Перемещение кнопки темы */
+.theme-btn {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    font-family: var(--font-primary);
+    z-index: 1000;
+}
+
+.theme-btn:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+/* Улучшенные графики */
+.js-plotly-plot .plotly .main-svg {
+    border-radius: 10px;
+}
+
+/* Адаптивность для заголовка */
+@media (max-width: 768px) {
+    .theme-btn {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin-top: 1rem;
+    }
+    
+    .header-content {
+        text-align: center;
+    }
+}
+/* Обязательные поля - черные звездочки */
+.form-group label::after {
+    content: " *";
+    color: var(--text-primary);
+}
+
+/* Плашка ФЗ-152 */
+.data-protection-notice {
+    background: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 1.5rem 0;
+    border-left: 4px solid #3498db;
+}
+
+.data-protection-notice h4 {
+    margin-bottom: 0.5rem;
+    font-family: var(--font-heading);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.data-protection-notice p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Кнопка темы */
+.theme-btn {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    font-family: var(--font-primary);
+    z-index: 1000;
+}
+
+.theme-btn:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+/* Графики */
+.js-plotly-plot .plotly .main-svg {
+    border-radius: 10px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .theme-btn {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin-top: 1rem;
+    }
+    
+    .header-content {
+        text-align: center;
+    }
+}
+/* Стили для новой секции характеристик опухоли */
+.tumor-characteristics-section {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px var(--shadow);
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #9b59b6;
+}
+
+.tumor-characteristics-section h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-family: var(--font-heading);
+}
+
+/* Скрытие/показ подтипа */
+.subtype-display {
+    background: var(--bg-primary);
+    padding: 1.5rem;
+    border-radius: 10px;
+    border: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.subtype-display[style*="display: none"] {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.subtype-display[style*="display: block"] {
+    opacity: 1;
+    transform: translateY(0);
+}
