@@ -1,3 +1,4 @@
-If you wanna start model to make prognose, you should open model.txt file in project repository and open link, wich will redirect you to google colab, that cotain model code. So, you can use this way for testing our model, that can predict tumor dynamics for patient personally.
+Our model offers opportunities to predict the dynamics of tumor growth in a patient with breast cancer.
+To run the model, you need to open model.txt a file with a link to google colab.
 
-Our repository also contain backend and frontend code.
+Our repository also contain backend and frontend code in folder, named all. To open the web application interface, you need to run the file index.html . In the web interface, the doctor enters the patient's data in a special form.
